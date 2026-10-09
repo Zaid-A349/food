@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Plus, Search, Zap, Shield, MapPin, Clock, Leaf, LayoutDashboard, Sparkles, CheckCircle2 } from 'lucide-react'
 import Reveal from '../components/Reveal.jsx'
 import SectionHead from '../components/SectionHead.jsx'
 import SiteHeader from '../components/SiteHeader.jsx'
 import SiteFooter from '../components/SiteFooter.jsx'
 import { useLang } from '../i18n.jsx'
+import { useApp } from '../store.jsx'
 
 function useCountUp(target, start) {
   const [val, setVal] = useState(0)
@@ -56,10 +58,20 @@ function Counter({ target, suffix = '+' }) {
 
 export default function Home() {
   const { t } = useLang()
+  const { user, activePosts } = useApp()
+  const navigate = useNavigate()
   const [toastMessage, setToastMessage] = useState('')
 
+  const handlePostFood = () => {
+    if (!user) {
+      navigate('/auth', { state: { from: '/post' } })
+    } else {
+      navigate('/post')
+    }
+  }
+
   const showNotice = (featureName) => {
-    setToastMessage(`⚡ Hackathon Milestone 1: Landing Page UI active. "${featureName}" will be connected in next milestone!`)
+    setToastMessage(`⚡ Hackathon Mid-Round: Food Provider workflow is active! "${featureName}" will be connected next.`)
     setTimeout(() => {
       setToastMessage('')
     }, 4000)
@@ -73,7 +85,9 @@ export default function Home() {
   }
 
   const handleAction = (name) => {
-    if (name === 'Features') {
+    if (name === 'Post Food') {
+      handlePostFood()
+    } else if (name === 'Features') {
       scrollToSection('why-us')
     } else if (name === 'About') {
       scrollToSection('community')
@@ -208,13 +222,13 @@ export default function Home() {
           >
             <div className="flex items-center gap-4">
               <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-green-50 font-display text-2xl font-black text-green-600 border border-green-200/60 shadow-xs">
-                4
+                {activePosts.length}
               </div>
               <div>
                 <div className="flex items-center gap-2">
                   <span className="dot-live" />
                   <span className="font-display text-base sm:text-lg font-bold text-slate-900">
-                    4 Active {t('stats.food')}
+                    {activePosts.length} Active {t('stats.food')}
                   </span>
                 </div>
                 <p className="mt-0.5 text-xs sm:text-sm text-slate-500">

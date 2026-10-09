@@ -1,13 +1,25 @@
 import { useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
-import { Globe, Plus, Menu, X, Sparkles } from 'lucide-react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Globe, Plus, Menu, X, LogOut, User } from 'lucide-react'
 import Logo from './Logo.jsx'
 import { useLang } from '../i18n.jsx'
+import { useApp } from '../store.jsx'
 
 export default function SiteHeader({ onActionNotice }) {
   const { t, toggle, lang } = useLang()
+  const { user, logout } = useApp()
   const location = useLocation()
+  const navigate = useNavigate()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
+  const handlePostFoodClick = () => {
+    if (!user) {
+      navigate('/auth', { state: { from: '/post' } })
+    } else {
+      navigate('/post')
+    }
+    setMobileMenuOpen(false)
+  }
 
   const handleDummyClick = (name) => {
     if (onActionNotice) {
@@ -18,8 +30,8 @@ export default function SiteHeader({ onActionNotice }) {
 
   const navItems = [
     { label: t('nav.home'), to: '/' },
+    { label: t('nav.postFood'), onClick: handlePostFoodClick, isAction: true },
     { label: t('nav.findFood'), action: 'Find Food' },
-    { label: t('nav.postFood'), action: 'Post Food', isAction: true },
     { label: t('nav.features'), action: 'Features' },
     { label: t('nav.about'), action: 'About' },
     { label: t('nav.ngo'), action: 'NGO Mode' },
@@ -45,7 +57,7 @@ export default function SiteHeader({ onActionNotice }) {
               return (
                 <button
                   key={item.label}
-                  onClick={() => handleDummyClick(item.action)}
+                  onClick={item.onClick}
                   type="button"
                   className="inline-flex items-center gap-1.5 rounded-xl bg-green-600 px-3 py-2 text-xs lg:text-sm font-bold text-white shadow-xs hover:bg-green-500 hover:shadow-md transition cursor-pointer"
                 >
@@ -94,12 +106,28 @@ export default function SiteHeader({ onActionNotice }) {
             <span>{lang === 'en' ? 'हिन्दी' : 'English'}</span>
           </button>
           
-          <button
-            onClick={() => handleDummyClick('Login')}
-            className="h-9 rounded-xl border border-slate-200 bg-white px-4 text-xs font-bold text-slate-800 shadow-xs transition hover:border-green-500 hover:bg-green-50 hover:text-green-700 cursor-pointer"
-          >
-            {t('nav.login')}
-          </button>
+          {user ? (
+            <div className="flex items-center gap-2">
+              <span className="hidden sm:inline-flex items-center gap-1.5 rounded-xl bg-green-50 border border-green-200/80 px-3 py-1.5 text-xs font-bold text-green-800">
+                <User size={13} className="text-green-600" />
+                {user.name}
+              </span>
+              <button
+                onClick={logout}
+                title="Sign Out"
+                className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 hover:text-red-600 hover:bg-red-50 hover:border-red-200 transition cursor-pointer"
+              >
+                <LogOut size={15} />
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => navigate('/auth')}
+              className="h-9 rounded-xl border border-slate-200 bg-white px-4 text-xs font-bold text-slate-800 shadow-xs transition hover:border-green-500 hover:bg-green-50 hover:text-green-700 cursor-pointer"
+            >
+              {t('nav.login')}
+            </button>
+          )}
 
           {/* Mobile hamburger */}
           <button
@@ -117,12 +145,23 @@ export default function SiteHeader({ onActionNotice }) {
           {navItems.map((item) => (
             <button
               key={item.label}
-              onClick={() => handleDummyClick(item.action || item.label)}
+              onClick={item.onClick || (() => handleDummyClick(item.action || item.label))}
               className="w-full text-left rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-green-50 hover:text-green-700"
             >
               {item.label}
             </button>
           ))}
+          {!user && (
+            <button
+              onClick={() => {
+                navigate('/auth')
+                setMobileMenuOpen(false)
+              }}
+              className="w-full text-left rounded-lg px-3 py-2 text-sm font-bold text-green-700 hover:bg-green-50"
+            >
+              {t('nav.login')}
+            </button>
+          )}
         </div>
       )}
     </header>
