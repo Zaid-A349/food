@@ -2,6 +2,7 @@ import express from 'express'
 import cors from 'cors'
 import dotenv from 'dotenv'
 import { connectDB } from './db.js'
+import { seedInitialData } from './seed.js'
 
 import authRoutes from './routes/auth.js'
 import postRoutes from './routes/posts.js'
@@ -38,6 +39,7 @@ app.use((err, req, res, next) => {
 // Start server and connect to MongoDB
 async function startServer() {
   await connectDB()
+  await seedInitialData()
 
   app.listen(PORT, () => {
     console.log(`===============================================`)
