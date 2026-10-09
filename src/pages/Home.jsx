@@ -1,11 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Plus, Search, Zap, Shield, MapPin, Clock, Leaf, LayoutDashboard, Sparkles, CheckCircle2 } from 'lucide-react'
-import Reveal from '../components/Reveal.jsx'
+import { Plus, Search, Zap, Shield, MapPin, Clock, Leaf, LayoutDashboard } from 'lucide-react'
 import SectionHead from '../components/SectionHead.jsx'
 import SiteHeader from '../components/SiteHeader.jsx'
 import SiteFooter from '../components/SiteFooter.jsx'
-import { useLang } from '../i18n.jsx'
 import { useApp } from '../store.jsx'
 
 function useCountUp(target, start) {
@@ -14,7 +12,7 @@ function useCountUp(target, start) {
     if (!start) return
     let raf
     const t0 = performance.now()
-    const dur = 1600
+    const dur = 1200
     const tick = (now) => {
       const p = Math.min((now - t0) / dur, 1)
       const eased = 1 - Math.pow(1 - p, 3)
@@ -42,7 +40,7 @@ function Counter({ target, suffix = '+' }) {
           io.disconnect()
         }
       },
-      { threshold: 0.4 }
+      { threshold: 0.3 }
     )
     io.observe(el)
     return () => io.disconnect()
@@ -57,10 +55,8 @@ function Counter({ target, suffix = '+' }) {
 }
 
 export default function Home() {
-  const { t } = useLang()
   const { user, activePosts } = useApp()
   const navigate = useNavigate()
-  const [toastMessage, setToastMessage] = useState('')
 
   const handlePostFood = () => {
     if (!user) {
@@ -70,13 +66,6 @@ export default function Home() {
     }
   }
 
-  const showNotice = (featureName) => {
-    setToastMessage(`⚡ Hackathon Mid-Round: Food Provider workflow is active! "${featureName}" will be connected next.`)
-    setTimeout(() => {
-      setToastMessage('')
-    }, 4000)
-  }
-
   const scrollToSection = (id) => {
     const el = document.getElementById(id)
     if (el) {
@@ -84,305 +73,239 @@ export default function Home() {
     }
   }
 
-  const handleAction = (name) => {
-    if (name === 'Post Food') {
-      handlePostFood()
-    } else if (name === 'Features') {
-      scrollToSection('why-us')
-    } else if (name === 'About') {
-      scrollToSection('community')
-    } else if (name === 'Find Food') {
-      scrollToSection('find-food')
-    } else {
-      showNotice(name)
-    }
-  }
-
   const community = [
-    { emoji: '🎓', title: 'Students', text: 'Free hot meal instead of skipping dinner' },
-    { emoji: '🏠', title: 'Families', text: 'Safe, dignified food pickup nearby' },
-    { emoji: '🍽️', title: 'Restaurants', text: 'Save ₹5,000/month on waste + good PR' },
-    { emoji: '💒', title: 'Wedding Caterers', text: '200 plates left? Donate, not dump' },
-    { emoji: '🏢', title: 'Office Canteens', text: '50 sandwiches at 5 PM? Share them!' },
-    { emoji: '👨👩👧', title: 'Home Cooks', text: '"Made too much!" → Share with neighbors' },
+    { emoji: '🎓', title: 'Students', text: 'Free hot meals near campus or hostels' },
+    { emoji: '🏠', title: 'Families', text: 'Safe, dignified fresh food pickup nearby' },
+    { emoji: '🍽️', title: 'Restaurants', text: 'Zero food waste and reduced kitchen disposal costs' },
+    { emoji: '💒', title: 'Wedding Caterers', text: 'Surplus buffet food shared with those in need' },
+    { emoji: '🏢', title: 'Office Canteens', text: 'Afternoon sandwiches and meal trays redistributed' },
+    { emoji: '🍲', title: 'Home Cooks', text: 'Share excess home-cooked portions with neighbors' },
   ]
 
   const why = [
-    { icon: Zap, title: 'Instant Posting', text: 'Post food in under 30 seconds. Login once and share anytime.' },
-    { icon: Shield, title: 'Privacy First', text: 'Secure logins. No unnecessary data stored. Anonymity for takers.' },
-    { icon: MapPin, title: 'Hyper-Local', text: 'GPS-powered proximity. Find food within walking distance.' },
-    { icon: Clock, title: 'Auto-Expire', text: 'Posts auto-delete after pickup time. Always fresh listings.' },
-    { icon: Leaf, title: 'Zero Waste', text: 'Every meal rescued = less landfill. Saving the planet, one plate at a time.' },
-    { icon: LayoutDashboard, title: 'NGO Dashboard', text: 'Bulk operations, reporting, and coordination for organizations.' },
+    { icon: Zap, title: 'Instant Posting', text: 'Post food in under 30 seconds with simple location capture.' },
+    { icon: Shield, title: 'Privacy First', text: 'Direct, secure access with no unnecessary data collection.' },
+    { icon: MapPin, title: 'Hyper-Local', text: 'GPS-guided discovery to find food within walking distance.' },
+    { icon: Clock, title: 'Auto-Expire', text: 'Listings automatically expire after the pickup window ends.' },
+    { icon: Leaf, title: 'Zero Waste', text: 'Every meal rescued keeps food out of landfills and helps our planet.' },
+    { icon: LayoutDashboard, title: 'Organization Support', text: 'Tools for community kitchens and bulk food distribution.' },
   ]
 
-  const giverSteps = [t('how.g1'), t('how.g2'), t('how.g3'), t('how.g4')]
-  const seekerSteps = [t('how.s1'), t('how.s2'), t('how.s3'), t('how.s4')]
+  const giverSteps = [
+    'Tap "Post Food"',
+    'Fill simple meal & quantity details',
+    'Listing goes live instantly',
+    'Auto-expires when pickup time ends',
+  ]
+
+  const seekerSteps = [
+    'Browse available surplus food',
+    'Check location and remaining time',
+    'Head over for pickup',
+    'Collect meal — fresh & free',
+  ]
 
   const findSpots = [
-    { emoji: '📍', title: 'Live Food Feed', text: 'Every active food post near you appears in real time. See the food, quantity, distance and pickup time.' },
-    { emoji: '🍛', title: 'Restaurants & Hotels', text: 'Surplus buffet, bakery and kitchen items posted right after peak hours — still hot and fresh.' },
-    { emoji: '💒', title: 'Weddings & Events', text: 'Hundreds of fresh plates from functions and parties, posted late evening instead of being dumped.' },
-    { emoji: '🏢', title: 'Offices & Canteens', text: 'Afternoon surplus — sandwiches, snacks and full meals from office and college canteens.' },
-    { emoji: '🏠', title: 'Home Cooks', text: '"Made too much!" — neighbors sharing extra portions with people nearby.' },
-    { emoji: '🏛️', title: 'Community Kitchens & NGOs', text: 'Verified NGOs and community kitchens posting scheduled bulk pickups at regular spots.' },
+    { emoji: '📍', title: 'Live Food Feed', text: 'Every active food post near you appears in real time with quantity and pickup time.' },
+    { emoji: '🍛', title: 'Restaurants & Hotels', text: 'Surplus buffet, bakery, and kitchen items posted right after peak hours.' },
+    { emoji: '💒', title: 'Weddings & Events', text: 'Untouched catering portions shared in late evening instead of being discarded.' },
+    { emoji: '🏢', title: 'Offices & Canteens', text: 'Sandwiches, snacks, and lunch meals from local business cafeterias.' },
+    { emoji: '🏠', title: 'Home Cooks', text: 'Neighbors sharing extra prepared meals directly with people nearby.' },
+    { emoji: '🏛️', title: 'Community Kitchens', text: 'Scheduled community distribution spots and volunteer shelters.' },
   ]
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-slate-800 relative">
-      {/* Toast Notice */}
-      {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-[99999] max-w-md animate-bounce rounded-2xl bg-slate-900 px-5 py-3.5 text-xs sm:text-sm font-semibold text-white shadow-2xl flex items-center gap-3 border border-slate-700">
-          <CheckCircle2 size={18} className="text-emerald-400 shrink-0" />
-          <span>{toastMessage}</span>
-        </div>
-      )}
-
+    <div className="min-h-screen bg-[#f8fafc] text-slate-800">
       {/* ---------------- Header Navigation Bar ---------------- */}
-      <SiteHeader onActionNotice={handleAction} />
+      <SiteHeader onNavigateSection={scrollToSection} />
 
       {/* ---------------- Hero ---------------- */}
-      <section className="relative flex min-h-[85vh] flex-col items-center justify-center overflow-hidden px-4 pt-16 pb-14 text-center">
-        <div
-          className="pointer-events-none absolute -top-32 left-1/2 h-96 w-[42rem] -translate-x-1/2 rounded-full opacity-35 blur-3xl"
-          style={{ background: 'radial-gradient(closest-side, rgba(34,197,94,.16), transparent)' }}
-        />
+      <section className="relative flex min-h-[75vh] flex-col items-center justify-center px-4 pt-14 pb-12 text-center">
+        <h1 className="mt-2 font-display text-4xl font-black leading-[1.1] tracking-tight text-slate-900 sm:text-6xl max-w-4xl">
+          <span>From Waste to </span>
+          <span className="text-green-600">Plates</span>
+          <br />
+          <span className="text-slate-800">— Just 1 Tap Away</span>
+        </h1>
 
-        {/* Live badge */}
-        <div className="inline-flex items-center gap-2 rounded-full border border-green-600/25 bg-green-50 px-4 py-1.5 text-xs font-bold tracking-widest text-green-700">
-          <span className="dot-live" />
-          {t('hero.badge')}
+        <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-slate-600 sm:text-lg">
+          Connect restaurants, weddings, and kitchens with hungry people nearby.{' '}
+          <span className="font-bold text-green-600">
+            Zero food waste. Zero hunger. Zero cost.
+          </span>
+        </p>
+
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+          <button
+            onClick={handlePostFood}
+            className="btn-brand px-8 py-3.5 text-base inline-flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <Plus size={18} strokeWidth={2.5} />
+            Post Free Food
+          </button>
+          <button
+            onClick={() => scrollToSection('find-food')}
+            className="btn-outline px-8 py-3.5 text-base inline-flex items-center justify-center gap-2 cursor-pointer hover:border-green-500 hover:bg-green-50 hover:text-green-800"
+          >
+            <Search size={16} />
+            Find Food Nearby
+          </button>
         </div>
 
-        <Reveal delay={100}>
-          <h1 className="mt-6 font-display text-4xl font-black leading-[1.08] tracking-tight text-slate-900 sm:text-6xl">
-            <span>{t('hero.titleA')} </span>
-            <span className="text-gradient-fire">{t('hero.titleB')}</span>
-            <br />
-            <span className="text-gradient-gray">{t('hero.titleC')}</span>
-          </h1>
-        </Reveal>
-        <Reveal delay={200}>
-          <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-slate-600 sm:text-lg">
-            {t('hero.sub')}{' '}
-            <span className="font-bold text-green-600">
-              {t('hero.zero1')} {t('hero.zero2')} {t('hero.zero3')}
-            </span>
-          </p>
-        </Reveal>
-        <Reveal delay={300}>
-          <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-            <button
-              onClick={() => handleAction('Post Food')}
-              className="btn-brand px-8 py-3.5 text-base inline-flex items-center justify-center gap-2 cursor-pointer"
-            >
-              <Plus size={18} strokeWidth={2.5} />
-              {t('hero.cta1')}
-            </button>
+        <div className="card-dark mt-10 w-full max-w-4xl p-5 sm:p-6 text-left shadow-xs">
+          <div className="flex flex-col items-center gap-5 sm:flex-row sm:justify-between">
+            <ol className="grid w-full gap-3 grid-cols-2 lg:grid-cols-4">
+              {seekerSteps.map((s, i) => (
+                <li key={s} className="flex items-center gap-2.5">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-green-50 font-display text-xs font-extrabold text-green-700">
+                    {i + 1}
+                  </span>
+                  <span className="text-xs sm:text-sm font-medium text-slate-700">{s}</span>
+                </li>
+              ))}
+            </ol>
             <button
               onClick={() => scrollToSection('find-food')}
-              className="btn-outline px-8 py-3.5 text-base inline-flex items-center justify-center gap-2 cursor-pointer hover:border-green-500 hover:bg-green-50 hover:text-green-800"
+              className="btn-brand shrink-0 px-6 py-2.5 text-sm w-full sm:w-auto cursor-pointer"
             >
-              <Search size={16} />
-              {t('nav.findFood')} Nearby
+              Find Food Now <span aria-hidden>→</span>
             </button>
           </div>
-        </Reveal>
-
-        <Reveal delay={350} className="w-full max-w-4xl">
-          <div className="card-dark mt-9 w-full p-5 sm:p-6 text-left shadow-sm">
-            <div className="flex flex-col items-center gap-5 sm:flex-row sm:justify-between">
-              <ol className="grid w-full gap-3 grid-cols-2 lg:grid-cols-4">
-                {seekerSteps.map((s, i) => (
-                  <li key={s} className="flex items-center gap-2.5">
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-green-50 font-display text-xs font-extrabold text-green-700">
-                      {i + 1}
-                    </span>
-                    <span className="text-xs sm:text-sm font-medium text-slate-700">{s}</span>
-                  </li>
-                ))}
-              </ol>
-              <button
-                onClick={() => scrollToSection('find-food')}
-                className="btn-brand shrink-0 px-6 py-2.5 text-sm w-full sm:w-auto cursor-pointer"
-              >
-                Find Food Now <span aria-hidden>→</span>
-              </button>
-            </div>
-          </div>
-        </Reveal>
+        </div>
       </section>
 
       {/* ---------------- Live strip ---------------- */}
       <section className="mx-auto max-w-6xl px-4 sm:px-6">
-        <Reveal delay={100}>
-          <button
-            onClick={() => scrollToSection('find-food')}
-            className="card-dark card-hover flex w-full flex-col sm:flex-row items-center justify-between gap-4 p-5 sm:px-8 sm:py-5 text-left transition hover:border-green-500/40 hover:shadow-md cursor-pointer"
-          >
-            <div className="flex items-center gap-4">
-              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-green-50 font-display text-2xl font-black text-green-600 border border-green-200/60 shadow-xs">
-                {activePosts.length}
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="dot-live" />
-                  <span className="font-display text-base sm:text-lg font-bold text-slate-900">
-                    {activePosts.length} Active {t('stats.food')}
-                  </span>
-                </div>
-                <p className="mt-0.5 text-xs sm:text-sm text-slate-500">
-                  {t('strip.live')} • Real-time posts available for pickup right now
-                </p>
-              </div>
+        <button
+          onClick={() => scrollToSection('find-food')}
+          className="card-dark card-hover flex w-full flex-col sm:flex-row items-center justify-between gap-4 p-5 sm:px-8 sm:py-5 text-left cursor-pointer"
+        >
+          <div className="flex items-center gap-4">
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-green-50 font-display text-2xl font-black text-green-600 border border-green-200">
+              {activePosts.length}
             </div>
-            <span className="flex items-center gap-2 font-bold text-sm text-green-600 shrink-0">
-              Go get food <span aria-hidden>→</span>
-            </span>
-          </button>
-        </Reveal>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="dot-live" />
+                <span className="font-display text-base sm:text-lg font-bold text-slate-900">
+                  {activePosts.length} Active Listings Available
+                </span>
+              </div>
+              <p className="mt-0.5 text-xs sm:text-sm text-slate-500">
+                Surplus food listings available for pickup right now
+              </p>
+            </div>
+          </div>
+          <span className="flex items-center gap-2 font-bold text-sm text-green-600 shrink-0">
+            View Listings <span aria-hidden>→</span>
+          </span>
+        </button>
       </section>
 
       {/* ---------------- Impact ---------------- */}
-      <section id="impact" className="mx-auto max-w-6xl scroll-mt-24 px-4 py-24 sm:px-6">
+      <section id="impact" className="mx-auto max-w-6xl scroll-mt-24 px-4 py-20 sm:px-6">
         <SectionHead
-          pill={t('impact.pill')}
-          title={
-            <>
-              Numbers That <span className="text-gradient-fire">Matter</span>
-            </>
-          }
+          pill="IMPACT"
+          title="Numbers That Matter"
+          sub="Real meals saved from going to waste and shared with community members."
         />
-        <div className="mx-auto mt-12 grid max-w-4xl gap-4 sm:grid-cols-3">
+        <div className="mx-auto mt-10 grid max-w-4xl gap-4 sm:grid-cols-3">
           {[
-            { target: 11, label: t('impact.meals'), suffix: '+' },
-            { target: 2, label: t('impact.donors'), suffix: '+' },
-            { target: 1, label: t('impact.cities'), suffix: '' },
-          ].map((c, i) => (
-            <Reveal key={c.label} delay={i * 100}>
-              <div className="card-dark card-hover p-8 text-center">
-                <Counter target={c.target} suffix={c.suffix} />
-                <div className="mt-2 text-sm font-medium text-slate-500">{c.label}</div>
-              </div>
-            </Reveal>
+            { target: 11, label: 'Meals Rescued', suffix: '+' },
+            { target: 2, label: 'Active Food Donors', suffix: '+' },
+            { target: 1, label: 'City Coverage', suffix: '' },
+          ].map((c) => (
+            <div key={c.label} className="card-dark card-hover p-8 text-center">
+              <Counter target={c.target} suffix={c.suffix} />
+              <div className="mt-2 text-sm font-medium text-slate-500">{c.label}</div>
+            </div>
           ))}
         </div>
-        <Reveal delay={250}>
-          <div className="mx-auto mt-7 flex max-w-xl items-center justify-center gap-2 rounded-xl bg-slate-50 border border-slate-200/80 px-4 py-2.5 text-center text-xs sm:text-sm text-slate-500">
-            <span className="inline-block h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>{t('impact.note')}</span>
-          </div>
-        </Reveal>
       </section>
 
       {/* ---------------- How it works ---------------- */}
-      <section id="how-it-works" className="mx-auto max-w-6xl scroll-mt-24 px-4 pb-24 sm:px-6">
-        <SectionHead pill={t('how.pill')} title={t('how.title')} />
-        <div className="mt-12 grid gap-5 md:grid-cols-2">
+      <section id="how-it-works" className="mx-auto max-w-6xl scroll-mt-24 px-4 pb-20 sm:px-6">
+        <SectionHead pill="HOW IT WORKS" title="Simple as 1-2-3" sub="A smooth connection between food surplus and food access." />
+        <div className="mt-10 grid gap-5 md:grid-cols-2">
           {[
-            { title: t('how.givers'), sub: t('how.giversSub'), steps: giverSteps },
-            { title: t('how.seekers'), sub: t('how.seekersSub'), steps: seekerSteps },
-          ].map((col, ci) => (
-            <Reveal key={col.title} delay={ci * 120}>
-              <div className="card-dark h-full p-7">
-                <h3 className="font-display text-xl font-bold text-slate-900">{col.title}</h3>
-                <p className="mt-1 text-sm text-slate-500">{col.sub}</p>
-                <ol className="mt-6 space-y-4">
-                  {col.steps.map((s, i) => (
-                    <li key={s} className="flex items-center gap-4">
-                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-green-50 font-display text-sm font-extrabold text-green-700">
-                        {String(i + 1).padStart(2, '0')}
-                      </span>
-                      <span className="text-sm font-medium text-slate-700">{s}</span>
-                    </li>
-                  ))}
-                </ol>
-              </div>
-            </Reveal>
+            { title: 'For Food Donors', sub: 'Share surplus meals with zero hassle', steps: giverSteps },
+            { title: 'For Community Members', sub: 'Locate fresh meals within walking distance', steps: seekerSteps },
+          ].map((col) => (
+            <div key={col.title} className="card-dark h-full p-7">
+              <h3 className="font-display text-xl font-bold text-slate-900">{col.title}</h3>
+              <p className="mt-1 text-sm text-slate-500">{col.sub}</p>
+              <ol className="mt-6 space-y-4">
+                {col.steps.map((s, i) => (
+                  <li key={s} className="flex items-center gap-4">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-green-50 font-display text-sm font-extrabold text-green-700">
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                    <span className="text-sm font-medium text-slate-700">{s}</span>
+                  </li>
+                ))}
+              </ol>
+            </div>
           ))}
         </div>
       </section>
 
       {/* ---------------- Where to find food ---------------- */}
-      <section id="find-food" className="mx-auto max-w-6xl scroll-mt-24 px-4 pb-24 sm:px-6">
-        <SectionHead pill={t('find.pill')} title={t('find.title')} sub={t('find.sub')} />
-        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {findSpots.map((f, i) => (
-            <Reveal key={f.title} delay={(i % 3) * 100}>
-              <div className="card-dark card-hover h-full p-6">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-green-50 text-2xl">{f.emoji}</div>
-                <h3 className="mt-4 font-display text-lg font-bold text-slate-900">{f.title}</h3>
-                <p className="mt-1.5 text-sm leading-relaxed text-slate-600">{f.text}</p>
-              </div>
-            </Reveal>
+      <section id="find-food" className="mx-auto max-w-6xl scroll-mt-24 px-4 pb-20 sm:px-6">
+        <SectionHead pill="DISCOVERY" title="Where Surplus Food Comes From" sub="Surplus meals appear in real-time from these common local hubs." />
+        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {findSpots.map((f) => (
+            <div key={f.title} className="card-dark card-hover h-full p-6">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-green-50 text-2xl">{f.emoji}</div>
+              <h3 className="mt-4 font-display text-lg font-bold text-slate-900">{f.title}</h3>
+              <p className="mt-1.5 text-sm leading-relaxed text-slate-600">{f.text}</p>
+            </div>
           ))}
         </div>
       </section>
 
       {/* ---------------- Community ---------------- */}
-      <section id="community" className="mx-auto max-w-6xl scroll-mt-24 px-4 pb-24 sm:px-6">
-        <SectionHead pill={t('community.pill')} title={t('community.title')} sub={t('community.sub')} />
-        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {community.map((c, i) => (
-            <Reveal key={c.title} delay={(i % 3) * 100}>
-              <div className="card-dark card-hover h-full p-6">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-green-50 text-2xl">{c.emoji}</div>
-                <h3 className="mt-4 font-display text-lg font-bold text-slate-900">{c.title}</h3>
-                <p className="mt-1.5 text-sm leading-relaxed text-slate-600">{c.text}</p>
-              </div>
-            </Reveal>
+      <section id="community" className="mx-auto max-w-6xl scroll-mt-24 px-4 pb-20 sm:px-6">
+        <SectionHead pill="COMMUNITY" title="Who Uses FoodResQ" sub="From students to local restaurants — everyone benefits." />
+        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {community.map((c) => (
+            <div key={c.title} className="card-dark card-hover h-full p-6">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-green-50 text-2xl">{c.emoji}</div>
+              <h3 className="mt-4 font-display text-lg font-bold text-slate-900">{c.title}</h3>
+              <p className="mt-1.5 text-sm leading-relaxed text-slate-600">{c.text}</p>
+            </div>
           ))}
         </div>
       </section>
 
       {/* ---------------- Why us ---------------- */}
-      <section id="why-us" className="mx-auto max-w-6xl scroll-mt-24 px-4 pb-24 sm:px-6">
-        <SectionHead pill={t('why.pill')} title={t('why.title')} />
-        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {why.map((f, i) => (
-            <Reveal key={f.title} delay={(i % 3) * 100}>
-              <div className="card-dark card-hover h-full p-6">
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-green-50 text-green-600">
-                  <f.icon size={20} />
-                </div>
-                <h3 className="mt-4 font-display text-lg font-bold text-slate-900">{f.title}</h3>
-                <p className="mt-1.5 text-sm leading-relaxed text-slate-600">{f.text}</p>
+      <section id="why-us" className="mx-auto max-w-6xl scroll-mt-24 px-4 pb-20 sm:px-6">
+        <SectionHead pill="PLATFORM" title="Built for Fast & Dignified Impact" sub="Fast, simple, and free community food sharing." />
+        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {why.map((f) => (
+            <div key={f.title} className="card-dark card-hover h-full p-6">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-green-50 text-green-600">
+                <f.icon size={20} />
               </div>
-            </Reveal>
+              <h3 className="mt-4 font-display text-lg font-bold text-slate-900">{f.title}</h3>
+              <p className="mt-1.5 text-sm leading-relaxed text-slate-600">{f.text}</p>
+            </div>
           ))}
         </div>
-        <Reveal delay={200}>
-          <div className="mt-10 text-center">
-            <button
-              onClick={() => showNotice('Features Matrix')}
-              className="btn-outline inline-flex items-center gap-2 px-8 py-3.5 text-sm font-bold shadow-xs hover:border-green-500 hover:bg-green-50 hover:text-green-800 cursor-pointer"
-            >
-              <Sparkles size={16} className="text-green-600" />
-              Explore All 8+ Platform Features & Tech Comparison Matrix →
-            </button>
-          </div>
-        </Reveal>
       </section>
 
       {/* ---------------- CTA ---------------- */}
-      <section id="cta" className="mx-auto max-w-4xl scroll-mt-24 px-4 pb-24 text-center sm:px-6">
-        <Reveal>
-          <div className="card-dark relative overflow-hidden border border-green-200/90 bg-gradient-to-br from-white via-green-50/50 to-emerald-50/70 px-6 py-16 shadow-xl shadow-green-600/5 sm:px-16">
-            <div
-              className="pointer-events-none absolute -top-24 left-1/2 h-64 w-96 -translate-x-1/2 rounded-full opacity-40 blur-3xl"
-              style={{ background: 'radial-gradient(closest-side, rgba(34,197,94,.25), transparent)' }}
-            />
-            <h2 className="relative font-display text-3xl font-extrabold text-slate-900 sm:text-4xl">{t('cta.title')}</h2>
-            <p className="relative mx-auto mt-4 max-w-xl text-slate-600">{t('cta.sub')}</p>
-            <button onClick={() => handleAction('Post Food')} className="btn-brand relative mt-8 px-10 py-4 text-base inline-flex items-center justify-center gap-2 cursor-pointer">
-              <Plus size={18} strokeWidth={2.5} />
-              {t('cta.btn')}
-            </button>
-          </div>
-        </Reveal>
+      <section id="cta" className="mx-auto max-w-4xl scroll-mt-24 px-4 pb-20 text-center sm:px-6">
+        <div className="card-dark border border-green-200 bg-white px-6 py-14 shadow-sm sm:px-16">
+          <h2 className="font-display text-3xl font-extrabold text-slate-900 sm:text-4xl">Have Surplus Food Right Now?</h2>
+          <p className="mx-auto mt-3 max-w-xl text-slate-600">Takes less than 30 seconds to post. Someone nearby is waiting.</p>
+          <button onClick={handlePostFood} className="btn-brand mt-7 px-9 py-3.5 text-base inline-flex items-center justify-center gap-2 cursor-pointer">
+            <Plus size={18} strokeWidth={2.5} />
+            Post Food Now
+          </button>
+        </div>
       </section>
 
-      <SiteFooter onActionNotice={handleAction} />
+      <SiteFooter />
     </div>
   )
 }

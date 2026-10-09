@@ -1,24 +1,18 @@
 import { Link } from 'react-router-dom'
 import Logo from './Logo.jsx'
-import { useLang } from '../i18n.jsx'
 
-export default function SiteFooter({ onActionNotice }) {
-  const { t } = useLang()
-
+export default function SiteFooter() {
   const links = [
-    { label: t('nav.postFood'), action: 'Post Food' },
-    { label: t('nav.findFood'), action: 'Find Food' },
-    { label: t('nav.features'), action: 'Features' },
-    { label: t('nav.ngo'), action: 'NGO Mode' },
-    { label: t('nav.about'), action: 'About' },
-    { label: 'Donate', action: 'Donate' },
-    { label: t('nav.feedback'), action: 'Feedback' },
-    { label: t('nav.legal'), action: 'Legal & Privacy' },
+    { label: 'Post Food', to: '/post' },
+    { label: 'Find Food', to: '/#find-food' },
+    { label: 'How It Works', to: '/#how-it-works' },
+    { label: 'Impact', to: '/#impact' },
+    { label: 'Community', to: '/#community' },
   ]
 
   return (
     <footer className="border-t border-slate-200 bg-white">
-      <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-5 px-4 py-7 sm:flex-row sm:px-6">
+      <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-5 px-4 py-8 sm:flex-row sm:px-6">
         {/* Brand & Identity */}
         <div className="flex items-center gap-3">
           <Logo size={32} />
@@ -32,28 +26,28 @@ export default function SiteFooter({ onActionNotice }) {
               </span>
             </div>
             <p className="text-xs text-slate-500">
-              Developed by <span className="font-semibold text-slate-700">Team BrainBytes</span>
+              Surplus Food Rescue & Redistribution
             </p>
           </div>
         </div>
 
-        {/* Smart Inline Navigation */}
-        <nav className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs font-semibold text-slate-600">
+        {/* Navigation */}
+        <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs font-semibold text-slate-600">
           {links.map((l) => (
-            <button
+            <Link
               key={l.label}
-              onClick={() => onActionNotice && onActionNotice(l.action)}
-              className="transition hover:text-green-600 cursor-pointer"
+              to={l.to}
+              className="transition hover:text-green-600"
             >
               {l.label}
-            </button>
+            </Link>
           ))}
         </nav>
 
-        {/* Compact Status & Copyright */}
+        {/* Copyright */}
         <div className="text-center text-xs text-slate-400 sm:text-right">
-          <p className="font-medium text-slate-600">© 2026 FoodResQ</p>
-          <p className="text-[11px] text-slate-400">100% Free • Fighting Food Waste</p>
+          <p className="font-medium text-slate-600">© 2026 FoodResQ Platform</p>
+          <p className="text-[11px] text-slate-400">Connecting surplus food with communities</p>
         </div>
       </div>
     </footer>

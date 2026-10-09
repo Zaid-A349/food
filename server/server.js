@@ -19,7 +19,7 @@ app.use(express.json())
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'healthy',
-    app: 'FoodResQ Backend API (Hackathon Edition)',
+    app: 'FoodResQ Backend API',
     database: 'MongoDB Atlas',
     timestamp: new Date(),
   })
