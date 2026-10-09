@@ -121,17 +121,7 @@ export function AppProvider({ children }) {
       setUser(res.user)
       return { ok: true, user: res.user }
     }
-    const fallbackUser = {
-      name,
-      email,
-      role: extra.role || 'donor',
-      phone: extra.phone || '',
-      organization: extra.organization || '',
-      city: extra.city || 'Meerut',
-      verified: true,
-    }
-    setUser(fallbackUser)
-    return { ok: true, user: fallbackUser }
+    return { ok: false, error: res?.error || 'Registration failed on MongoDB database.' }
   }, [])
 
   const logout = useCallback(() => {

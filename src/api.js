@@ -57,8 +57,8 @@ export const api = {
       }
       return { ok: true, user: data.user }
     } catch (err) {
-      console.warn('[FoodResQ API] Backend unavailable for registration:', err.message)
-      return null
+      console.error('[FoodResQ API] Backend unavailable for registration:', err.message)
+      return { ok: false, error: 'Could not connect to database server. Please ensure the server is running on port 5000.' }
     }
   },
 
